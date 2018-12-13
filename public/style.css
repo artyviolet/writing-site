@@ -1,0 +1,168 @@
+* {
+  margin: 0;
+  padding: 0;
+  color: #2a0c4e;
+  font-family: "Merriweather", serif;
+  box-sizing: border-box; }
+
+body {
+  background-color: #fff8f0; }
+
+h1, h2, h3 {
+  font-family: "Poppins", sans-serif; }
+
+nav a {
+  font-family: "Poppins", sans-serif;
+  text-decoration: none;
+  color: #fff8f0;
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
+  padding-left: 1.2rem;
+  padding-right: 1.2rem;
+  text-align: center;
+  display: inline-block; }
+
+nav p {
+  font-family: 'Poppins', sans-serif;
+  color: #fff8f0; }
+
+#gotouser {
+  text-decoration: underline;
+  padding-left: 0; }
+
+.navLink:hover {
+  color: #ebceea;
+  height: 100%;
+  background-color: #2a0c4e; }
+
+nav {
+  background-color: #51355a;
+  height: 3.5rem; }
+
+#content {
+  width: 95%;
+  margin: auto;
+  margin-top: 1rem; }
+
+#content p:not(.exclude) {
+  margin-top: 1rem;
+  margin-left: 1rem; }
+
+.right {
+  float: right; }
+
+#login, #register, #add, #edit {
+  text-align: center; }
+
+button, input[type=submit] {
+  padding: 0.5rem;
+  color: #e6ceea;
+  background-color: #2a0c4e;
+  border-radius: 5px;
+  font-size: 0.8rem; }
+
+textarea {
+  font-size: 0.8rem; }
+
+.error {
+  text-align: center;
+  margin: auto;
+  color: red; }
+
+#addworkbutton, #editwork {
+  text-align: center;
+  display: block;
+  color: #e6ceea;
+  background-color: #2a0c4e;
+  text-decoration: none;
+  width: 9rem;
+  padding: 0.7rem;
+  border-radius: 5px; }
+
+#propic {
+  width: 10rem;
+  height: 10rem;
+  border-radius: 5px; }
+
+#info {
+  display: inline-block;
+  height: 10rem;
+  width: 40%;
+  vertical-align: top; }
+
+.featured {
+  text-align: center;
+  display: inline-block;
+  width: 10rem;
+  margin: 1rem; }
+
+.featured img {
+  margin: auto;
+  width: 8rem;
+  height: 8rem; }
+
+.featuredcov, .displayWorks {
+  text-align: center;
+  display: inline-block;
+  width: 10rem;
+  margin: 1rem; }
+
+.featuredcov img, .displayWorks img {
+  margin: auto;
+  width: 8rem;
+  height: 12rem; }
+
+ul {
+  list-style-type: none; }
+
+#workDesc {
+  display: inline-block;
+  height: 15rem;
+  vertical-align: top; }
+
+#cover {
+  width: 10rem;
+  height: 15rem; }
+
+.libMain {
+  padding: 1rem; }
+
+.libCover {
+  margin: auto;
+  width: 6rem;
+  height: 9rem; }
+
+.libWork {
+  display: inline-block;
+  vertical-align: top;
+  height: 9rem; }
+
+.libWork a {
+  margin-left: 1rem; }
+
+.libWork p {
+  font-size: 0.8rem; }
+
+table {
+  width: 80%; }
+
+td {
+  border: none;
+  border-radius: 10px;
+  padding: 1rem;
+  background-color: rgba(235, 206, 234, 0.6); }
+
+td .title {
+  font-size: 1.2rem; }
+
+td .topicdesc {
+  font-size: 0.9rem; }
+
+td .numTopics {
+  float: right;
+  position: relative;
+  top: -1.5rem;
+  font-size: 0.8rem; }
+
+tr {
+  margin: 1rem; }

@@ -50,3 +50,7 @@
 
 # Embedded web-server pid file
 /.web-server-pid
+
+.DS_Store
+img
+coverimg

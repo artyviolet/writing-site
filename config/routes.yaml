@@ -1,3 +1,11 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+
+index:
+  path: /
+  controller: App\Controller\MainController::index
+
+notFound:
+  path: /{slug}
+  controller: App\Controller\MainController:notFound
