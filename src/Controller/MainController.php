@@ -20,12 +20,28 @@ class MainController extends AbstractController
 
     }
 
+    public function about()
+    {
+      return $this->render('about.html.twig');
+    }
+
+    public function contact() {
+      return $this->render('contact.html.twig');
+    }
+
+    public function categories() {
+      return $this->render('categories.html.twig');
+    }
+
+    public function library() {
+      return $this->render('library.html.twig');
+    }
+
     public function notFound($slug)
     {
-      return new Response(
-        'url ' . $slug . ' NOT FOUND'
-      );
+      return $this->render('404.html.twig');
     }
+
 
 }
 
