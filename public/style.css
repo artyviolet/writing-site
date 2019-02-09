@@ -1,12 +1,16 @@
 * {
   margin: 0;
   padding: 0;
-  color: #2a0c4e;
+  color: #401C3C;
   font-family: "Merriweather", serif;
   box-sizing: border-box; }
 
 body {
-  background-color: #fff8f0; }
+  background-color: #FAF4EC; }
+
+p {
+  font-size: 0.9rem;
+}
 
 h1, h2, h3 {
   font-family: "Poppins", sans-serif; }
@@ -14,36 +18,44 @@ h1, h2, h3 {
 nav a {
   font-family: "Poppins", sans-serif;
   text-decoration: none;
-  color: #fff8f0;
+  color: #DFE0F5;
   padding-top: 0.9rem;
   padding-bottom: 0.9rem;
-  padding-left: 1.2rem;
-  padding-right: 1.2rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
   text-align: center;
   display: inline-block; }
 
 nav p {
   font-family: 'Poppins', sans-serif;
-  color: #fff8f0; }
+  font-size: 1rem;
+  color: #DFE0F5; }
 
 #gotouser {
   text-decoration: underline;
   padding-left: 0; }
 
+.navLink {
+  transition: all 0.2s ease;
+  width: 8rem;
+}
+
 .navLink:hover {
-  color: #ebceea;
+  color: #C8B3CC;
   height: 100%;
-  background-color: #2a0c4e; }
+  letter-spacing: 1.5px;
+  transition: all 0.2s ease;
+  background-color: #401C3C; }
 
 nav {
-  background-color: #51355a;
+  background-color: #632B5E;
   height: 3.5rem;
   position: sticky;
   top: 0;
 }
 
 #content {
-  width: 95%;
+  width: 90%;
   margin: auto;
   margin-top: 1rem; }
 
@@ -59,8 +71,8 @@ nav {
 
 button, input[type=submit] {
   padding: 0.5rem;
-  color: #e6ceea;
-  background-color: #2a0c4e;
+  color: #DFE0F5;
+  background-color: #632B5E;
   border-radius: 5px;
   font-size: 0.8rem; }
 
@@ -74,14 +86,15 @@ textarea {
   color: red; }
 
 #addworkbutton, #editwork {
+  font-size: 0.8rem;
   text-align: center;
   display: block;
-  color: #e6ceea;
-  background-color: #2a0c4e;
+  color: #DFE0F5;
+  background-color: #632B5E;
   text-decoration: none;
   width: 9rem;
-  padding: 0.7rem;
-  border-radius: 5px; }
+  padding: 0.8rem;
+  border-radius: 2px; }
 
 #propic {
   width: 10rem;
@@ -92,7 +105,7 @@ textarea {
   display: inline-block;
   height: 10rem;
   width: 40%;
-  line-height: 0.7rem;
+  line-height: 0.8rem;
   vertical-align: top; }
 
 .featured {
@@ -121,7 +134,7 @@ textarea {
   text-align: justify;
   hyphens: auto;
   display: inline-block;
-  width: 18rem;
+  width: 16.5rem;
   margin: 1rem; }
 
   .displayWorks img {
@@ -170,7 +183,7 @@ td {
   border: none;
   border-radius: 10px;
   padding: 1rem;
-  background-color: rgba(235, 206, 234, 0.6); }
+  background-color: #E1D5E3; }
 
 td .title {
   font-size: 1.2rem; }
@@ -193,7 +206,7 @@ hr {
 
 .sidebar {
   float: left;
-  width: 9rem;
+  width: 8rem;
   font-size: 0.75rem;
 }
 
@@ -202,13 +215,14 @@ hr {
 }
 
 footer {
+  padding: 10px;
+  font-size: 0.9rem;
+  background-color: #E1D5E3;
   position: absolute;
   left: 0;
   width: 100%;
 }
 
 footer p {
-  padding: 10px;
-  font-size: 0.9rem;
-  background-color: #ebceea;
+  display: inline;
 }

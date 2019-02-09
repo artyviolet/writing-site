@@ -3,6 +3,7 @@
 {% block body %}
 
 <h1>{{pageWork.title}}</h1>
+<br />
 <img id = "cover" src="/coverimg/{{pageWork.cover}}">
 <div id = "workDesc">
 <p><strong>Author</strong>: <a href="/user/{{pageWork.author}}">{{pageWork.authorname}}</a></p>
@@ -10,20 +11,18 @@
 <p><strong>Genre</strong>: {{pageWork.genre}} | <strong>Rating</strong>: {{pageWork.rating}}</p>
 <p><strong>Tags</strong>: {{pageWork.tags}}</p>
 <p><strong>Published</strong>: {{pageWork.dateposted}} | <strong>Last Updated</strong>: {{pageWork.lastupdate}}</p>
-<p><strong>Word Count</strong>: </p>
+<p><strong>Word Count</strong>: {{pageWork.wordcount}}</p>
 </div>
 <br />
 <br />
 
 {% if usermatch %}
-<br />
-<br />
 <a id = "editwork" href="/{{pageWork.ID}}/edit">Edit Work</a>
 <br />
 {% endif %}
 
 <hr />
-<p>{{content}}</p>
+<p>{{content | raw }}</p>
 
 
 {% endblock %}

@@ -28,7 +28,7 @@ class user {
 
 class work {
 
-  public function __construct($ID, $author, $authorname, $title, $desc, $genre, $rating, $tags, $cover, $dateposted, $lastupdate) {
+  public function __construct($ID, $author, $authorname, $title, $desc, $genre, $rating, $tags, $wordcount, $cover, $dateposted, $lastupdate) {
 
     $this->ID = $ID;
     $this->author = $author;
@@ -38,6 +38,7 @@ class work {
     $this->genre = $genre;
     $this->rating = $rating;
     $this->tags = $tags;
+    $this->wordcount = $wordcount;
     $this->cover = $cover;
     $this->dateposted = calculations::convertYmd($dateposted);
     $this->lastupdate = calculations::convertDate($lastupdate);
@@ -255,7 +256,7 @@ class db {
 
     $conn = $this->connect();
 
-    $stmt = $conn->prepare("SELECT ID, Title, Description, Cover FROM Works WHERE Author = ?");
+    $stmt = $conn->prepare("SELECT ID, Title, Description, WordCount, Cover FROM Works WHERE Author = ?");
     $stmt->bind_param("i", $uid);
     $stmt->execute();
 
@@ -353,8 +354,10 @@ class db {
 
     $userid = $this->session->get('user')->ID;
 
-    $addstatement = $conn->prepare("INSERT INTO Works (Author, Title, Description, Genre, Rating, Tags, Cover, DatePosted, LastUpdate) VALUES (?, ?, ?, ?, ?, ?, \"default.jpg\", ?, ?)");
-    $addstatement->bind_param("isssssss", $userid, $title, $desc, $genre, $rating, $tags, $date, $curdate);
+    $wordcount = str_word_count($content);
+
+    $addstatement = $conn->prepare("INSERT INTO Works (Author, Title, Description, Genre, Rating, Tags, WordCount, Cover, DatePosted, LastUpdate) VALUES (?, ?, ?, ?, ?, ?, ?, \"default.jpg\", ?, ?)");
+    $addstatement->bind_param("isssssiss", $userid, $title, $desc, $genre, $rating, $tags, $wordcount, $date, $curdate);
     $addstatement->execute() or die('Failed to update site table: ' . \mysqli_error($conn));
     $id = $conn->insert_id;
 
@@ -373,7 +376,7 @@ class db {
 
     $stmt = $conn->prepare("SELECT * FROM Works WHERE ID = ? ");
     $stmt->bind_param("i", $pid); // bind parameters for query
-    $stmt->bind_result($tempid, $tempauth, $temptitle, $tempdesc, $tempgenre, $temprating, $temptags, $tempcover, $tempposted, $tempupdated);
+    $stmt->bind_result($tempid, $tempauth, $temptitle, $tempdesc, $tempgenre, $temprating, $temptags, $tempwc, $tempcover, $tempposted, $tempupdated);
     $stmt->execute();
     $stmt->fetch();
     $conn->close();
@@ -389,7 +392,7 @@ class db {
       $query->fetch();
 
 
-      $work = new work($tempid, $tempauth, $tempauthor, $temptitle, $tempdesc, $tempgenre, $temprating, $temptags, $tempcover, $tempposted, $tempupdated);
+      $work = new work($tempid, $tempauth, $tempauthor, $temptitle, $tempdesc, $tempgenre, $temprating, $temptags, $tempwc, $tempcover, $tempposted, $tempupdated);
       return $work;
     }
 
@@ -498,6 +501,15 @@ class MainController extends AbstractController
 
         $works = $db->get_user_works($pageid);
 
+        $totalwc = 0;
+
+        foreach ($works as $w) {
+          $totalwc += $w["WordCount"];
+
+        }
+
+        $userinfo->wordcount = $totalwc;
+
         return $this->render('userpage.html.twig', ['pageUser' => $userinfo, 'works' => $works, 'usermatch' => $usermatch]);
       }
     }
@@ -560,9 +572,15 @@ class MainController extends AbstractController
           $usermatch = false;
         }
 
-        $myfile = fopen("./works/$pageid/chap_1.txt", "r") or die("Unable to open file!");
-        $content = fread($myfile,filesize("./works/$pageid/chap_1.txt"));
-        fclose($myfile);
+        $file = fopen("./works/$pageid/chap_1.txt", "r") or die("Unable to open file!");
+        $content = "";
+
+        while(! feof($file))
+        {
+        $content .= fgets($file). "<br /><br />";
+        }
+
+        fclose($file);
 
         return $this->render('workpage.html.twig', ['pageWork' => $workinfo, 'usermatch' => $usermatch, 'content' => $content]);
       }

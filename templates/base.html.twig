@@ -14,7 +14,6 @@
 	<a class = "navLink" href="/about">About</a>
 	<a class = "navLink" href="/library">Library</a>
 	<a class = "navLink" href="/forum">Forum</a>
-	<a class = "navLink" href="/contact">Contact</a>
 	{% if app.session.get('user') != null %}
 	<a class = "right" id = "logoutbutton" href="/logout">Log Out</a>
 	<a class = "right" id = "editprofilebutton" href="/edit">Edit Profile</a>
@@ -31,7 +30,8 @@
 
 
 <footer>
-	<p>&copy; 2019 Arty Lightman</p><a href="">
+	<p>&copy; 2019 Arty Lightman • </p>
+	<a href="/contact">Contact</a>
 </footer>
 
 </body>
