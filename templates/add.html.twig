@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<h1 id = "add">Add Work</h1>
+
+{% if adderr is defined %}
+<div class="error">{{adderr}}</div>
+{% endif %}
+
+<form id = "add" method = "POST" action = "/add">
+	<label>Title</label>
+	<br />
+	<input type = "text" name = "title">
+	<br />
+	<br />
+	<label>Description</label>
+	<br />
+	<input type = "text" name = "desc">
+	<br />
+	<br />
+	<label>Genre:</label>
+	<select name = "genre">
+		<option name = "Fantasy" value="Fantasy">Fantasy</option>
+		<option name = "Science Fiction" value="Science Fiction">Science Fiction</option>
+		<option name = "Mystery" value="Mystery">Mystery</option>
+		<option name = "Historical Fiction" value="Historical Fiction">Historical Fiction</option>
+		<option name = "Fanfiction" value="Fanfiction">Fanfiction</option>
+		<option name = "General Fiction" value="General Fiction">General Fiction</option>
+		<option name = "Poetry" value="Poetry">Poetry</option>
+	</select>
+	<br />
+	<br />
+	<label>Rating:</label>
+	<select name = "rating">
+		<option name = "E" value="E">E</option>
+		<option name = "E+" value="E+">E+</option>
+		<option name = "T" value="T">T</option>
+		<option name = "M" value="M">M</option>
+	</select>
+	<br />
+	<br />
+	<label>Tags:</label>
+	<br />
+	<input type = "text" name = "tags"/>
+	<br />
+	<br />
+	<textarea rows = "50" cols = "100" name = "content"></textarea>
+
+	<br />
+	<br />
+	<input type = "submit" value = "Submit Work">
+
+</form>
+
+<br />
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<h1>{{pageWork.title}}</h1>
+<img id = "cover" src="/coverimg/{{pageWork.cover}}">
+<div id = "workDesc">
+<p><strong>Author</strong>: <a href="/user/{{pageWork.author}}">{{pageWork.authorname}}</a></p>
+<p><strong>Description</strong>: {{pageWork.desc}}</p>
+<p><strong>Genre</strong>: {{pageWork.genre}} | <strong>Rating</strong>: {{pageWork.rating}}</p>
+<p><strong>Tags</strong>: {{pageWork.tags}}</p>
+<p><strong>Published</strong>: {{pageWork.dateposted}} | <strong>Last Updated</strong>: {{pageWork.lastupdate}}</p>
+<p><strong>Word Count</strong>: </p>
+</div>
+<br />
+<br />
+
+{% if usermatch %}
+<br />
+<br />
+<a id = "editwork" href="/{{pageWork.ID}}/edit">Edit Work</a>
+<br />
+{% endif %}
+
+<hr />
+<p>{{content}}</p>
+
+
+{% endblock %}

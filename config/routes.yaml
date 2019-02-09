@@ -22,6 +22,34 @@ library:
   path: /library
   controller: App\Controller\MainController::library
 
+login:
+  path: /login
+  controller: App\Controller\MainController::showlogin
+
+register:
+  path: /register
+  controller: App\Controller\MainController::showregister
+
+logout:
+  path: /logout
+  controller: App\Controller\MainController::logout
+
+edit:
+  path: /edit
+  controller: App\Controller\MainController::edit_profile
+
+add:
+  path: /add
+  controller: App\Controller\MainController::show_add
+
+user_page:
+  path: /user/{slug}
+  controller: App\Controller\MainController::user_page
+
+work_page:
+  path: /work/{slug}
+  controller: App\Controller\MainController::show_work
+
 notFound:
   path: /{slug}
-  controller: App\Controller\MainController:notFound
+  controller: App\Controller\MainController::not_found

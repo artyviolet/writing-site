@@ -37,7 +37,10 @@ nav p {
 
 nav {
   background-color: #51355a;
-  height: 3.5rem; }
+  height: 3.5rem;
+  position: sticky;
+  top: 0;
+}
 
 #content {
   width: 95%;
@@ -67,6 +70,7 @@ textarea {
 .error {
   text-align: center;
   margin: auto;
+  padding: 5px;
   color: red; }
 
 #addworkbutton, #editwork {
@@ -88,6 +92,7 @@ textarea {
   display: inline-block;
   height: 10rem;
   width: 40%;
+  line-height: 0.7rem;
   vertical-align: top; }
 
 .featured {
@@ -101,7 +106,7 @@ textarea {
   width: 8rem;
   height: 8rem; }
 
-.featuredcov, .displayWorks {
+.featuredcov {
   text-align: center;
   display: inline-block;
   width: 10rem;
@@ -112,15 +117,30 @@ textarea {
   width: 8rem;
   height: 12rem; }
 
+  .displayWorks {
+  text-align: justify;
+  hyphens: auto;
+  display: inline-block;
+  width: 18rem;
+  margin: 1rem; }
+
+  .displayWorks img {
+  display: inline;
+  float: left;
+  width: 8rem;
+  height: 12rem; }
+
 ul {
   list-style-type: none; }
 
 #workDesc {
   display: inline-block;
   height: 15rem;
+  line-height: 0.7rem;
   vertical-align: top; }
 
 #cover {
+  border: 1px solid #2a0c4e;
   width: 10rem;
   height: 15rem; }
 
@@ -166,3 +186,29 @@ td .numTopics {
 
 tr {
   margin: 1rem; }
+
+hr {
+  border: 1px solid #2a0c4e;
+}
+
+.sidebar {
+  float: left;
+  width: 9rem;
+  font-size: 0.75rem;
+}
+
+.sidebar a {
+  font-size: 0.9rem;
+}
+
+footer {
+  position: absolute;
+  left: 0;
+  width: 100%;
+}
+
+footer p {
+  padding: 10px;
+  font-size: 0.9rem;
+  background-color: #ebceea;
+}

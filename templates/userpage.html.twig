@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+  <h1>{{pageUser.username}}</h1>
+  <br />
+  <img id = "propic" src="/img/{{pageUser.pic}}" />
+  <div id = "info">
+  <p><strong>About</strong>: {{pageUser.about}}</p>
+  <p><strong>Location</strong>: {{pageUser.location}}</p>
+  <p><strong>Joined</strong>: {{pageUser.joined}}</p>
+  {% if pageUser.show %}<p><strong>Age</strong>: {{pageUser.age}}</p>{% endif %}
+  <p><strong>Total Word Count</strong>:</p>
+  </div>
+
+  <br />
+  {% if usermatch %}
+  <br />
+  <a href="../add" id = "addworkbutton">Add New Work</a>
+  <br />
+  {% endif %}
+
+  <br />
+
+  <h3>Works by Author</h3>
+
+  <br />
+
+  {% for work in works %}
+
+    <li class = "displayWorks">
+      <img src="../coverimg/{{work.Cover}}" />
+      <br />
+      <div class = "sidebar">
+        <p><a href="/work/{{work.ID}}">{{work.Title}}</a><p>
+        <p>{{work.Description}}</p>
+      </div>
+    </li>
+
+  {% endfor %}
+
+{% endblock %}
