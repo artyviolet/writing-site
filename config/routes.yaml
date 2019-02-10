@@ -50,6 +50,10 @@ work_page:
   path: /work/{slug}
   controller: App\Controller\MainController::show_work
 
+edit_work_details:
+  path: /work/{slug}/edit
+  controller: App\Controller\MainController::edit_work
+
 notFound:
   path: /{slug}
   controller: App\Controller\MainController::not_found

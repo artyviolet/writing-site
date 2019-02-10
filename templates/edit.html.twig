@@ -31,6 +31,9 @@
 	<input type = "text" name = "location" value = "{{app.session.get('user').location}}" />
 	<br />
 	<br />
+	<input type = "checkbox" name = "show" value = "show"{%if app.session.get('user').show == true %}checked{% endif %}/><label> Show Age on Profile</label>
+	<br />
+	<br />
 	<input type = "submit" value = "Update Profile" />
 
 </form>

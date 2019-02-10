@@ -29,11 +29,12 @@
   {% for work in works %}
 
     <li class = "displayWorks">
-      <img src="../coverimg/{{work.Cover}}" />
+      <a href="/work/{{work.ID}}"><img src="../coverimg/{{work.Cover}}" /></a>
       <br />
       <div class = "sidebar">
-        <p><a href="/work/{{work.ID}}">{{work.Title}}</a><p>
-        <p>{{work.Description}}</p>
+        <p class = "first" ><strong>{{work.Title}}</strong></p>
+        <p class = "pdesc">{{work.Description}}</p>
+        <a href="/work/{{work.ID}}"><p>Read ></p></a>
       </div>
     </li>
 

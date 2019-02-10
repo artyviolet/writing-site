@@ -2,25 +2,24 @@
 
 {% block body %}
 
-<h1 id = "add">Add Work</h1>
+<h1 id = "edit">Edit Story Details</h1>
 
-{% if adderr is defined %}
-<div class="error">{{adderr}}</div>
-{% endif %}
+<div class = "error">{%if message is defined %}{{message}}{% endif %}</div>
 
-<form id = "add" method = "POST" action = "/add">
+<form id = "add" method = "POST" enctype = "multipart/form-data" action = "">
 	<label>Title</label>
 	<br />
-	<input type = "text" name = "title">
+	<input type = "text" name = "title" value = "{{work.title}}">
 	<br />
 	<br />
 	<label>Description</label>
 	<br />
-	<input type = "text" name = "desc">
+	<input type = "text" name = "desc" value = "{{work.desc}}">
 	<br />
 	<br />
 	<label>Genre:</label>
 	<select name = "genre">
+		<option selected hidden name = "{{work.genre}}" value ="{{work.genre}}">{{work.genre}}</option>
 		<option name = "Fantasy" value="Fantasy">Fantasy</option>
 		<option name = "Science Fiction" value="Science Fiction">Science Fiction</option>
 		<option name = "Mystery" value="Mystery">Mystery</option>
@@ -33,6 +32,7 @@
 	<br />
 	<label>Rating:</label>
 	<select name = "rating">
+		<option selected hidden name = "{{work.rating}}" value ="{{work.rating}}">{{work.rating}}</option>
 		<option name = "E" value="E">E</option>
 		<option name = "E+" value="E+">E+</option>
 		<option name = "T" value="T">T</option>
@@ -40,19 +40,15 @@
 	</select>
 	<br />
 	<br />
+	<label>Cover: </label><input type = "file" name = "photo" />
+	<br />
+	<br />
 	<label>Tags:</label>
 	<br />
-	<input type = "text" name = "tags"/>
-	<br />
-	<br />
-	<textarea rows = "50" cols = "100" name = "content" id = "addcontent"></textarea>
+	<input type = "text" name = "tags" value = "{{work.tags}}"/>
 
 	<br />
 	<br />
 	<input type = "submit" value = "Submit Work">
-
-</form>
-
-<br />
 
 {% endblock %}

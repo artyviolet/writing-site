@@ -28,7 +28,7 @@ class user {
 
 class work {
 
-  public function __construct($ID, $author, $authorname, $title, $desc, $genre, $rating, $tags, $wordcount, $cover, $dateposted, $lastupdate) {
+  public function __construct($ID, $author, $title, $desc, $genre, $rating, $tags, $cover, $authorname=NULL, $wordcount=NULL, $dateposted=NULL, $lastupdate=NULL) {
 
     $this->ID = $ID;
     $this->author = $author;
@@ -40,8 +40,10 @@ class work {
     $this->tags = $tags;
     $this->wordcount = $wordcount;
     $this->cover = $cover;
-    $this->dateposted = calculations::convertYmd($dateposted);
-    $this->lastupdate = calculations::convertDate($lastupdate);
+    if (isset($dateposted)) {
+      $this->dateposted = calculations::convertYmd($dateposted);
+      $this->lastupdate = calculations::convertDate($lastupdate);
+    }
 
   }
 
@@ -170,7 +172,7 @@ class db {
 
       $conn->close();
 
-      mkdir('/img/uploads/' + $tempID);
+      mkdir('/img/uploads/user_' + $tempID);
 
     }
 
@@ -281,6 +283,14 @@ class db {
     $about = $_POST["about"];
     $location = $_POST["location"];
 
+    if (isset($_POST["show"])) {
+      $show = 1;
+    }
+
+    else {
+      $show = 0;
+    }
+
     $id = $this->session->get('user')->ID;
 
     $pic = '';
@@ -324,13 +334,14 @@ class db {
       $pic = $this->session->get('user')->pic;
     }
 
-    $stmt = $conn->prepare("UPDATE Users SET Username = ?, Email = ?, About = ?, Location = ?, UserPic = ? WHERE ID = ?");
-    $stmt->bind_param('sssssi', $username, $email, $about, $location, $pic, $id); // bind parameters for query
+    $stmt = $conn->prepare("UPDATE Users SET Username = ?, Email = ?, ShowBday = ?, About = ?, Location = ?, UserPic = ? WHERE ID = ?");
+    $stmt->bind_param('ssisssi', $username, $email, $show, $about, $location, $pic, $id); // bind parameters for query
     $stmt->execute() or die('Failed to update site table: ' . \mysqli_error($conn)); // perform the query
     $stmt->close(); // close statement
 
     $this->session->get('user')->username = $username;
     $this->session->get('user')->email = $email;
+    $this->session->get('user')->show = boolval($show);
     $this->session->get('user')->about = $about;
     $this->session->get('user')->location = $location;
     $this->session->get('user')->pic = $pic;
@@ -366,6 +377,71 @@ class db {
     $file = fopen("./works/" . $id . "/chap_1.txt", "w");
     fwrite($file, $content);
 
+    mkdir('./coverimg/uploads/work_' + $tempID);
+
+
+  }
+
+  public function update_work($id) {
+
+    $conn = $this->connect();
+
+    $title = $_POST["title"];
+    $desc = $_POST["desc"];
+    $genre = $_POST["genre"];
+    $rating = $_POST["rating"];
+    $tags = $_POST["tags"];
+
+    $pic = '';
+
+    if(file_exists($_FILES['photo']['tmp_name']) && is_uploaded_file($_FILES['photo']['tmp_name']))
+    {
+
+      if($_FILES['photo']['name'])
+      {
+        if(!$_FILES['photo']['error'])
+        {
+          //modify the future file name
+          $tmp = substr($_FILES['photo']['tmp_name'], -6);
+          $new_file_name = strtolower($tmp); //rename file
+
+          $imagetypes = array(
+              'image/png' => '.png',
+              'image/gif' => '.gif',
+              'image/jpeg' => '.jpg',
+              'image/bmp' => '.bmp');
+              $ext = $imagetypes[$_FILES['photo']['type']];
+
+            //move it to where we want it to be
+          move_uploaded_file($_FILES['photo']['tmp_name'], "./coverimg/uploads/work_$id/$new_file_name" . $ext);
+          $pic = "uploads/work_$id/$new_file_name" . "$ext";
+
+        }
+
+            //if there is an error...
+        else
+        {
+          $message = 'The following error occurred:  '.$_FILES['photo']['error'];
+          echo $message;
+        }
+
+      }
+
+    }
+
+    if ($pic == '') {
+      $stmt = $conn->prepare("UPDATE Works SET Title = ?, Description = ?, Genre = ?, Rating = ?, Tags = ? WHERE ID = ?");
+      $stmt->bind_param('sssssi', $title, $desc, $genre, $rating, $tags, $id); // bind parameters for query
+    }
+
+    else {
+      $stmt = $conn->prepare("UPDATE Works SET Title = ?, Description = ?, Genre = ?, Rating = ?, Tags = ?, Cover = ? WHERE ID = ?");
+      $stmt->bind_param('ssssssi', $title, $desc, $genre, $rating, $tags, $pic, $id); // bind parameters for query
+    }
+
+    $stmt->execute() or die('Failed to update site table: ' . \mysqli_error($conn)); // perform the query
+    $stmt->close(); // close statement
+
   }
 
   public function get_work_page($pid) {
@@ -392,7 +468,7 @@ class db {
       $query->fetch();
 
 
-      $work = new work($tempid, $tempauth, $tempauthor, $temptitle, $tempdesc, $tempgenre, $temprating, $temptags, $tempwc, $tempcover, $tempposted, $tempupdated);
+      $work = new work($tempid, $tempauth, $temptitle, $tempdesc, $tempgenre, $temprating, $temptags, $tempcover,  $tempauthor, $tempwc, $tempposted, $tempupdated);
       return $work;
     }
 
@@ -400,6 +476,26 @@ class db {
       return NULL;
     }
 
+
+  }
+
+  public function get_work_info($id) {
+
+    $conn=$this->connect();
+
+    $stmt = $conn->prepare("SELECT Author, Title, Description, Genre, Rating, Tags, Cover FROM Works WHERE ID = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    $data = array();
+
+    $line = $result->fetch_assoc();
+
+    $workinfo = new work($id, $line["Author"], $line["Title"], $line["Description"], $line["Genre"], $line["Rating"], $line["Tags"], $line["Cover"]);
+
+    return $workinfo;
 
   }
 
@@ -543,7 +639,7 @@ class MainController extends AbstractController
 
         $db->post_story();
 
-        return $this->render('add.html.twig');
+        return $this->redirect("/user/" . $session->ID);
 
       }
 
@@ -586,6 +682,48 @@ class MainController extends AbstractController
       }
 
       return $this->render('workpage.html.twig');
+
+    }
+
+    public function edit_work($slug) {
+
+      $wid = intval($slug);
+      $session = $this->get('session');
+      $db = new db($session);
+      $workinfo = $db->get_work_info($slug);
+
+      if ($session->get('user') == NULL) {
+        return new Response($this->renderView('401.html.twig', array(), 401));
+
+      }
+
+      else if ($workinfo->author != $session->get('user')->ID) {
+        return new Response($this->renderView('401.html.twig', array(), 401));
+      }
+
+      else if ($workinfo == NULL) {
+        return $this->render('404.html.twig');
+      }
+
+      if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+
+        $session = $this->get('session');
+        $db = new db($session);
+
+        //$db->submit_profile_update();
+
+        $id = $session->get('user')->ID;
+
+        $db->update_work($wid);
+
+        return $this->redirect("/work/" . $wid);
+
+      }
+
+      else {
+        return $this->render('edit_work.html.twig', ['work' => $workinfo]);
+      }
 
     }
 

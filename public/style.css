@@ -36,7 +36,7 @@ nav p {
   padding-left: 0; }
 
 .navLink {
-  transition: all 0.2s ease;
+  transition: all 0.4s ease;
   width: 8rem;
 }
 
@@ -44,7 +44,7 @@ nav p {
   color: #C8B3CC;
   height: 100%;
   letter-spacing: 1.5px;
-  transition: all 0.2s ease;
+  transition: all 0.4s ease;
   background-color: #401C3C; }
 
 nav {
@@ -52,6 +52,7 @@ nav {
   height: 3.5rem;
   position: sticky;
   top: 0;
+  filter: drop-shadow(-2px 3px 7px);
 }
 
 #content {
@@ -76,8 +77,14 @@ button, input[type=submit] {
   border-radius: 5px;
   font-size: 0.8rem; }
 
+textarea#addcontent {
+  padding: 2rem;
+  font-size: 0.8rem;
+}
+
 textarea {
-  font-size: 0.8rem; }
+  padding: 2px;
+  font-family: "Merriweather"; }
 
 .error {
   text-align: center;
@@ -92,7 +99,7 @@ textarea {
   color: #DFE0F5;
   background-color: #632B5E;
   text-decoration: none;
-  width: 9rem;
+  width: 10rem;
   padding: 0.8rem;
   border-radius: 2px; }
 
@@ -131,8 +138,6 @@ textarea {
   height: 12rem; }
 
   .displayWorks {
-  text-align: justify;
-  hyphens: auto;
   display: inline-block;
   width: 16.5rem;
   margin: 1rem; }
@@ -204,14 +209,21 @@ hr {
   border: 1px solid #2a0c4e;
 }
 
-.sidebar {
+.sidebar{
   float: left;
   width: 8rem;
+}
+
+.sidebar a{
   font-size: 0.75rem;
 }
 
-.sidebar a {
-  font-size: 0.9rem;
+.first {
+  font-size: 0.85rem;
+}
+
+.pdesc {
+  font-size: 0.70rem;
 }
 
 footer {
