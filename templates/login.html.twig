@@ -2,11 +2,11 @@
 
 {% block body %}
 
-<h1 id = "login">Log In</h1>
+<h1 class = "login">Log In</h1>
 
 <div class = "error">{%if message is defined %}{{message}}{% endif %}</div>
 
-<form method = "post" action = "/login" id = "login">
+<form method = "post" action = "/login" class = "login">
 	<label>Email Address:</label>
 	<br />
 	<input type = "email" name = "email" />
@@ -19,5 +19,9 @@
 	<br />
 	<input type = "submit" value = "Log In" />
 </form>
+
+<br />
+
+<a class = "login" href="/register">Need an account?</a>
 
 {% endblock %}

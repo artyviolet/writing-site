@@ -67,7 +67,7 @@ nav {
 .right {
   float: right; }
 
-#login, #register, #add, #edit {
+.login, #register, #add, #edit {
   text-align: center; }
 
 button, input[type=submit] {
@@ -237,4 +237,16 @@ footer {
 
 footer p {
   display: inline;
+}
+
+#removespace {
+  margin: 0;
+  padding: 0;
+}
+
+a.login{
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin: auto;
 }

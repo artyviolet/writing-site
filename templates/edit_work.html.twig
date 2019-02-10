@@ -9,17 +9,17 @@
 <form id = "add" method = "POST" enctype = "multipart/form-data" action = "">
 	<label>Title</label>
 	<br />
-	<input type = "text" name = "title" value = "{{work.title}}">
+	<input type = "text" name = "title" value = "{{work.Title}}">
 	<br />
 	<br />
 	<label>Description</label>
 	<br />
-	<input type = "text" name = "desc" value = "{{work.desc}}">
+	<input type = "text" name = "desc" value = "{{work.Description}}">
 	<br />
 	<br />
 	<label>Genre:</label>
 	<select name = "genre">
-		<option selected hidden name = "{{work.genre}}" value ="{{work.genre}}">{{work.genre}}</option>
+		<option selected hidden name = "{{work.Genre}}" value ="{{work.Genre}}">{{work.Genre}}</option>
 		<option name = "Fantasy" value="Fantasy">Fantasy</option>
 		<option name = "Science Fiction" value="Science Fiction">Science Fiction</option>
 		<option name = "Mystery" value="Mystery">Mystery</option>
@@ -32,11 +32,11 @@
 	<br />
 	<label>Rating:</label>
 	<select name = "rating">
-		<option selected hidden name = "{{work.rating}}" value ="{{work.rating}}">{{work.rating}}</option>
-		<option name = "E" value="E">E</option>
-		<option name = "E+" value="E+">E+</option>
+		<option selected hidden name = "{{work.Rating}}" value ="{{work.Rating}}">{{work.Rating}}</option>
+		<option name = "G" value="G">G</option>
 		<option name = "T" value="T">T</option>
 		<option name = "M" value="M">M</option>
+		<option name = "E" value="E">E</option>
 	</select>
 	<br />
 	<br />
@@ -45,7 +45,7 @@
 	<br />
 	<label>Tags:</label>
 	<br />
-	<input type = "text" name = "tags" value = "{{work.tags}}"/>
+	<input type = "text" name = "tags" value = "{{work.Tags}}"/>
 
 	<br />
 	<br />

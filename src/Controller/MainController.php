@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 
 class user {
 
@@ -28,7 +29,7 @@ class user {
 
 class work {
 
-  public function __construct($ID, $author, $title, $desc, $genre, $rating, $tags, $cover, $authorname=NULL, $wordcount=NULL, $dateposted=NULL, $lastupdate=NULL) {
+  public function __construct($ID, $author, $authorname, $title, $desc, $genre, $rating, $tags, $wordcount, $cover, $dateposted, $lastupdate) {
 
     $this->ID = $ID;
     $this->author = $author;
@@ -76,6 +77,16 @@ class calculations {
 
   }
 
+  static function withinRange($work) {
+    $wc = $work->wordcount;
+    if ($wc >= $min && $wc <= $max) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
 }
 
 class db {
@@ -110,7 +121,7 @@ class db {
 
   }
 
-  public function check_register() {
+  public function checkRegister() {
 
     $conn = $this->connect();
 
@@ -172,7 +183,7 @@ class db {
 
       $conn->close();
 
-      mkdir('/img/uploads/user_' + $tempID);
+      mkdir('/img/uploads/user_' . $tempID);
 
     }
 
@@ -180,7 +191,7 @@ class db {
 
   }
 
-  public function check_login() {
+  public function checkLogin() {
 
     $conn = $this->connect();
 
@@ -227,7 +238,7 @@ class db {
 
   }
 
-  public function get_user_page($uid) {
+  public function getUserPage($uid) {
 
     $uid = intval($uid);
 
@@ -252,7 +263,7 @@ class db {
 
   }
 
-  public function get_user_works($uid) {
+  public function getUserWorks($uid) {
 
     $uid = intval($uid);
 
@@ -274,7 +285,7 @@ class db {
 
   }
 
-  public function submit_profile_update() {
+  public function submitProfileUpdate() {
 
     $conn = $this->connect();
 
@@ -348,7 +359,7 @@ class db {
 
   }
 
-  public function post_story() {
+  public function postStory() {
 
     $conn = $this->connect();
 
@@ -377,12 +388,12 @@ class db {
     $file = fopen("./works/" . $id . "/chap_1.txt", "w");
     fwrite($file, $content);
 
-    mkdir('./coverimg/uploads/work_' + $tempID);
+    mkdir('./coverimg/uploads/work_' . $id);
 
 
   }
 
-  public function update_work($id) {
+  public function updateWork($id) {
 
     $conn = $this->connect();
 
@@ -444,31 +455,24 @@ class db {
 
   }
 
-  public function get_work_page($pid) {
+  public function getWorkPage($pid) {
 
     $pid = intval($pid);
 
     $conn = $this->connect();
 
-    $stmt = $conn->prepare("SELECT * FROM Works WHERE ID = ? ");
+    $stmt = $conn->prepare("SELECT Works.ID, Works.Author, Users.Username, Works.Title, Works.Description, Works.Genre, Works.Rating, Works.Tags, Works.WordCount, Works.Cover, Works.DatePosted, Works.LastUpdate FROM Works INNER JOIN Users ON Works.Author=Users.ID WHERE Works.ID = ?");
     $stmt->bind_param("i", $pid); // bind parameters for query
-    $stmt->bind_result($tempid, $tempauth, $temptitle, $tempdesc, $tempgenre, $temprating, $temptags, $tempwc, $tempcover, $tempposted, $tempupdated);
+    $stmt->bind_result($tempid, $tempauth, $tempauthor, $temptitle, $tempdesc, $tempgenre, $temprating, $temptags, $tempwc, $tempcover, $tempposted, $tempupdated);
     $stmt->execute();
-    $stmt->fetch();
-    $conn->close();
 
-    if ($tempid != NULL) {
+    $result = $stmt->get_result();
 
+    $line = $result->fetch_assoc();
 
-      $conn2 = $this->connect();
-      $query= $conn2->prepare("SELECT Username FROM Users WHERE ID = ?");
-      $query->bind_param("i", $tempauth);
-      $query->execute();
-      $query->bind_result($tempauthor);
-      $query->fetch();
+    if ($line['ID'] != NULL) {
 
-
-      $work = new work($tempid, $tempauth, $temptitle, $tempdesc, $tempgenre, $temprating, $temptags, $tempcover,  $tempauthor, $tempwc, $tempposted, $tempupdated);
+      $work = new work($line["ID"], $line["Author"], $line["Username"], $line["Title"], $line["Description"], $line["Genre"], $line["Rating"], $line["Tags"], $line["WordCount"], $line["Cover"], $line["DatePosted"], $line["LastUpdate"]);
       return $work;
     }
 
@@ -479,7 +483,7 @@ class db {
 
   }
 
-  public function get_work_info($id) {
+  public function getWorkInfo($id) {
 
     $conn=$this->connect();
 
@@ -489,13 +493,99 @@ class db {
 
     $result = $stmt->get_result();
 
-    $data = array();
-
     $line = $result->fetch_assoc();
 
-    $workinfo = new work($id, $line["Author"], $line["Title"], $line["Description"], $line["Genre"], $line["Rating"], $line["Tags"], $line["Cover"]);
+    return $line;
 
-    return $workinfo;
+  }
+
+  public function generateLibrary() {
+
+    $conn = $this->connect();
+
+    $request = Request::createFromGlobals();
+
+    $titlefilt = $request->query->get('title');
+    $genrefilt = $request->query->get('genre');
+    $ratingfilt = $request->query->get('rating');
+    $wcfilt = $request->query->get('wordcount');
+
+    if ($titlefilt == "") {
+      $titlefilt = ".*";
+    }
+    else {
+      $titlefilt = "$titlefilt?";
+    }
+
+    if ($genrefilt == "") {
+      $genrefilt = ".*";
+    }
+    else {
+      $genrefilt = "^$genrefilt$";
+    }
+
+    if ($ratingfilt == "") {
+      $ratingfilt = ".*";
+    }
+    else {
+      $ratingfilt = "^$ratingfilt$";
+    }
+
+    $stmt = $conn->prepare("SELECT Works.ID, Works.Author, Users.Username, Works.Title, Works.Description, Works.Genre, Works.Rating, Works.Tags, Works.WordCount, Works.Cover, Works.DatePosted, Works.LastUpdate FROM Works INNER JOIN Users ON Works.Author=Users.ID WHERE Title REGEXP \"$titlefilt\" AND Genre REGEXP \"$genrefilt\" AND Rating REGEXP \"$ratingfilt\" ORDER BY Works.LastUpdate DESC");
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+
+    $data = array();
+
+    while($line = $result->fetch_assoc()){
+      $work = new work($line["ID"], $line["Author"], $line["Username"], $line["Title"], $line["Description"], $line["Genre"], $line["Rating"], $line["Tags"], $line["WordCount"], $line["Cover"], $line["DatePosted"], $line["LastUpdate"]);
+      array_push($data, $work);
+    }
+
+    $MIN = 0;
+    $MAX = NULL;
+
+    switch ($wcfilt) {
+      case '5k':
+        $MIN = 0;
+        $MAX = 4999;
+        break;
+      case '10k':
+        $MIN = 5000;
+        $MAX = 9999;
+        break;
+      case '50k':
+        $MIN = 10000;
+        $MAX = 49999;
+        break;
+      case '100k':
+        $MIN = 50000;
+        $MAX = 99999;
+        break;
+      case '100plus':
+        $MIN = 100000;
+        break;
+      default:
+        break;
+    }
+
+    $data = array_filter($data, function($val) use ($MIN, $MAX) {
+
+			if ($MAX != NULL && $val->wordcount > $MAX) {
+				return false;
+			}
+
+			if ($MIN != NULL && $val->wordcount < $MIN) {
+				return false;
+			}
+			else {
+				return true;
+			}
+
+    });
+
+    return $data;
 
   }
 
@@ -528,14 +618,21 @@ class MainController extends AbstractController
     }
 
     public function library() {
-      return $this->render('library.html.twig');
+
+      $session = $this->get('session');
+      $db = new db($session);
+
+      $works = $db->generateLibrary();
+
+      return $this->render('library.html.twig', ['works' => $works]);
+
     }
 
     public function showlogin() {
       if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $session = $this->get('session');
         $db = new db($session);
-        $message = $db->check_login();
+        $message = $db->checkLogin();
         if (isset($message)) {
           return $this->render('login.html.twig', ['message' => $message]);
         }
@@ -543,6 +640,12 @@ class MainController extends AbstractController
           return $this->redirect('/');
         }
       }
+
+      else if ($this->get('session')->get('user') != NULL){
+        return $this->redirect("/user/" . $this->get('session')->get('user')->ID);
+
+      }
+
       else {
         return $this->render('login.html.twig');
       }
@@ -553,13 +656,20 @@ class MainController extends AbstractController
       if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $session = $this->get('session');
         $db = new db($session);
-        $message = $db->check_register();
+        $message = $db->checkRegister();
+
         if (isset($message)) {
           return $this->render('register.html.twig', ['message' => $message]);
         }
+
         else {
           return $this->redirect('/');
         }
+      }
+
+
+      else if ($this->get('session')->get('user') != NULL){
+        return $this->redirect("/user/" . $this->get('session')->get('user')->ID);
       }
 
       else {
@@ -579,7 +689,7 @@ class MainController extends AbstractController
       $pageid = intval($slug);
       $session = $this->get('session');
       $db = new db($session);
-      $userinfo = $db->get_user_page($slug);
+      $userinfo = $db->getUserPage($slug);
 
       if ($userinfo == NULL) {
         return $this->render('404.html.twig');
@@ -595,7 +705,7 @@ class MainController extends AbstractController
           $usermatch = false;
         }
 
-        $works = $db->get_user_works($pageid);
+        $works = $db->getUserWorks($pageid);
 
         $totalwc = 0;
 
@@ -617,7 +727,7 @@ class MainController extends AbstractController
         $session = $this->get('session');
         $db = new db($session);
 
-        $db->submit_profile_update();
+        $db->submitProfileUpdate();
 
         $id = $session->get('user')->ID;
 
@@ -637,9 +747,9 @@ class MainController extends AbstractController
         $session = $this->get('session');
         $db = new db($session);
 
-        $db->post_story();
+        $db->postStory();
 
-        return $this->redirect("/user/" . $session->ID);
+        return $this->redirect("/user/" . $session->get('user')->ID);
 
       }
 
@@ -652,7 +762,7 @@ class MainController extends AbstractController
       $pageid = intval($slug);
       $session = $this->get('session');
       $db = new db($session);
-      $workinfo = $db->get_work_page($slug);
+      $workinfo = $db->getWorkPage($slug);
 
       if ($workinfo == NULL) {
         return $this->render('404.html.twig');
@@ -690,14 +800,14 @@ class MainController extends AbstractController
       $wid = intval($slug);
       $session = $this->get('session');
       $db = new db($session);
-      $workinfo = $db->get_work_info($slug);
+      $workinfo = $db->getWorkInfo($slug);
 
       if ($session->get('user') == NULL) {
         return new Response($this->renderView('401.html.twig', array(), 401));
 
       }
 
-      else if ($workinfo->author != $session->get('user')->ID) {
+      else if ($workinfo["Author"] != $session->get('user')->ID) {
         return new Response($this->renderView('401.html.twig', array(), 401));
       }
 
@@ -711,11 +821,9 @@ class MainController extends AbstractController
         $session = $this->get('session');
         $db = new db($session);
 
-        //$db->submit_profile_update();
-
         $id = $session->get('user')->ID;
 
-        $db->update_work($wid);
+        $db->updateWork($wid);
 
         return $this->redirect("/work/" . $wid);
 

@@ -26,25 +26,41 @@
 	<label>Rating:</label>
 	<select name = "rating" id = "rating">
 		<option name = "" value = "">Any</option>
-		<option name = "E" value="E">E</option>
-		<option name = "E+" value="E+">E+</option>
+		<option name = "G" value="G">G</option>
 		<option name = "T" value="T">T</option>
 		<option name = "M" value="M">M</option>
+		<option name = "E" value="E">E</option>
 	</select>
 	<br />
 	<br />
 	<label>Word Count:</label>
-	<select name = "wordCount" id = "wordCount">
+	<select name = "wordcount" id = "wordcount">
 		<option name = "" value = "">Any</option>
 		<option name = "5k" value="5k">0-5k</option>
 		<option name = "10k" value="10k">5k-10k</option>
 		<option name = "50k" value="50k">10k-50k</option>
 		<option name = "100k" value="100k">50-100k</option>
-		<option name = "100+" value = "100+">100k+</option>
+		<option name = "100+" value = "100plus">100k+</option>
 	</select>
 	<br />
 	<br />
 	<button type = "button">Search</button>
 </form>
+
+<br />
+
+<ul>
+{% for work in works %}
+<li class = "libMain">
+<img class = "libCover" src="../coverimg/{{work.cover}}" />
+<div class = "libWork">
+<strong><a href="/work/{{work.ID}}">{{work.title}}</a></strong>
+<p><strong>Author</strong>: <a id = "removespace" href="/user/{{work.author}}">{{work.authorname}}</a></p>
+<p>{{work.desc}}</p>
+<p><strong>Genre</strong>: {{work.genre}} | <strong>Rating</strong>: {{work.rating}} | <strong>Published</strong>: {{work.dateposted}} | <strong>Last Updated</strong>: {{work.lastupdate}}</p>
+</div>
+</li>
+{% endfor %}
+</ul>
 
 {% endblock %}
