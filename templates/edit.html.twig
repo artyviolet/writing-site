@@ -18,8 +18,15 @@
 	<input type = "email" name = "email" value = "{{app.session.get('user').email}}"/>
 	<br />
 	<br />
-	<label>Profile Picture: </label><input type = "file" name = "photo" />
+	<label>Profile Picture: </label>
 	<br />
+	<img id = "currentpic" src="/img/{{app.session.get('user').pic}}" />
+	<br />
+	<br />
+	<div id = "button-container">
+		<button id = "changePic" type = "button">Change Image</button>
+		<!--<input type = "file" name = "photo" />-->
+	</div>
 	<br />
 	<label>About</label>
 	<br />
@@ -32,6 +39,9 @@
 	<br />
 	<br />
 	<input type = "checkbox" name = "show" value = "show"{%if app.session.get('user').show == true %}checked{% endif %}/><label> Show Age on Profile</label>
+	<br />
+	<br />
+	<a href="/delete" onClick="return confirm('Are you sure you want to delete your account? Your data and uploaded works will be removed from the server.')">Delete Account</a>
 	<br />
 	<br />
 	<input type = "submit" value = "Update Profile" />

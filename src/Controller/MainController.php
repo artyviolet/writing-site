@@ -41,10 +41,12 @@ class work {
     $this->tags = $tags;
     $this->wordcount = $wordcount;
     $this->cover = $cover;
-    if (isset($dateposted)) {
-      $this->dateposted = calculations::convertYmd($dateposted);
-      $this->lastupdate = calculations::convertDate($lastupdate);
-    }
+    $this->dateposted = calculations::convertYmd($dateposted);
+    $this->lastupdate = calculations::convertDate($lastupdate);
+
+    $filecount = calculations::numFiles("./works/$ID");
+
+    $this->numChapters = $filecount;
 
   }
 
@@ -52,8 +54,7 @@ class work {
 
 class calculations {
 
-  static function getAge($birthdate)
-  {
+  static function getAge($birthdate) {
     $datetime1 = new \DateTime($birthdate);
     $datetime2 = new \DateTime("now");
     $interval = $datetime1->diff($datetime2);
@@ -87,19 +88,51 @@ class calculations {
     }
   }
 
+  static function numFiles($directory) {
+    $filecount = 0;
+    $files = glob($directory . "/*.txt");
+    if ($files){
+     $filecount = count($files);
+    }
+
+    return $filecount;
+  }
+
+  static function getChapterTitles($id) {
+
+    $numChapters = calculations::numFiles("./works/$id");
+
+    $chapters = array();
+
+    for ($i = 1; $i <= $numChapters; $i++) {
+      $file = fopen("./works/$id/chap_$i.txt", "r") or die("Unable to open file!");
+      $content = "";
+      $chaptertitle = "";
+
+      $line = fgets($file);
+
+      $title = explode("*TITLE*: ", $line);
+      $chaptertitle = $title[1];
+
+      array_push($chapters, $chaptertitle);
+
+    }
+
+    return $chapters;
+
+  }
+
 }
 
 class db {
 
   private $session;
 
-  public function __construct(Session $session)
-  {
+  public function __construct(Session $session) {
       $this->session = $session;
   }
 
-  public static function connect()
-  {
+  public function connect() {
 
     $info = file_get_contents('config.json');
     $dblogin = json_decode($info);
@@ -269,7 +302,7 @@ class db {
 
     $conn = $this->connect();
 
-    $stmt = $conn->prepare("SELECT ID, Title, Description, WordCount, Cover FROM Works WHERE Author = ?");
+    $stmt = $conn->prepare("SELECT ID, Title, Description, WordCount, Cover FROM Works WHERE Author = ? ORDER BY ID Desc");
     $stmt->bind_param("i", $uid);
     $stmt->execute();
 
@@ -306,7 +339,7 @@ class db {
 
     $pic = '';
 
-    if(file_exists($_FILES['photo']['tmp_name']) && is_uploaded_file($_FILES['photo']['tmp_name']))
+    if(isset($_FILES['photo']) && file_exists($_FILES['photo']['tmp_name']) && is_uploaded_file($_FILES['photo']['tmp_name']))
     {
 
       if($_FILES['photo']['name'])
@@ -386,6 +419,7 @@ class db {
     mkdir("./works/" . $id);
 
     $file = fopen("./works/" . $id . "/chap_1.txt", "w");
+    fwrite($file, "*TITLE*: Chapter 1\n\n");
     fwrite($file, $content);
 
     mkdir('./coverimg/uploads/work_' . $id);
@@ -405,7 +439,7 @@ class db {
 
     $pic = '';
 
-    if(file_exists($_FILES['photo']['tmp_name']) && is_uploaded_file($_FILES['photo']['tmp_name']))
+    if(isset($_FILES['photo']) && file_exists($_FILES['photo']['tmp_name']) && is_uploaded_file($_FILES['photo']['tmp_name']))
     {
 
       if($_FILES['photo']['name'])
@@ -487,7 +521,7 @@ class db {
 
     $conn=$this->connect();
 
-    $stmt = $conn->prepare("SELECT Author, Title, Description, Genre, Rating, Tags, Cover FROM Works WHERE ID = ?");
+    $stmt = $conn->prepare("SELECT ID, Author, Title, Description, Genre, Rating, Tags, WordCount, Cover FROM Works WHERE ID = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
 
@@ -589,23 +623,122 @@ class db {
 
   }
 
+  public function addNewChapter($id, $workinfo) {
+
+    $conn = $this->connect();
+
+    $title = $_POST["title"];
+    $content = $_POST["content"];
+
+    $numChapters = calculations::numFiles("./works/$id");
+
+    $newChapterNumber = $numChapters + 1;
+
+    $file = fopen("./works/$id/chap_$newChapterNumber.txt", "w");
+    fwrite($file, "*TITLE*: $title\n\n");
+    fwrite($file, $content);
+
+    $count = str_word_count($content);
+
+    $newWordCount = $workinfo["WordCount"] + $count;
+
+    $curtime = time();
+
+    $stmt = $conn->prepare("UPDATE Works SET WordCount = ?, LastUpdate = ? WHERE ID = ?");
+    $stmt->bind_param('ssi', $newWordCount, $curtime, $id); // bind parameters for query
+    $stmt->execute() or die('Failed to update site table: ' . \mysqli_error($conn)); // perform the query
+    $stmt->close(); // close statement
+
+  }
+
+  public function editChapter($workID, $chapterNum) {
+
+    $conn = $this->connect();
+
+    $title = $_POST["title"];
+    $content = $_POST["content"];
+
+    $file = fopen("./works/$workID/chap_$chapterNum.txt", "w");
+    fwrite($file, "*TITLE*: $title\n\n");
+    fwrite($file, $content);
+
+    $numChapters = calculations::numFiles("./works/$workID");
+    $totalwc = 0;
+
+    for ($i = 1; $i <= $numChapters; $i++) {
+      $file = fopen("./works/$workID/chap_$i.txt", "r") or die("Unable to open file!");
+      $content = "";
+      $chaptertitle = "";
+
+      while(! feof($file))
+      {
+        $line = fgets($file);
+
+        if (strpos($line, "*TITLE*") !== false) {
+          continue;
+        }
+
+        else {
+          $content .= $line;
+        }
+      }
+
+      fclose($file);
+
+      $totalwc += str_word_count($content);
+    }
+
+    $stmt = $conn->prepare("UPDATE Works SET WordCount = ? WHERE ID = ?");
+    $stmt->bind_param('si', $totalwc, $workID); // bind parameters for query
+    $stmt->execute() or die('Failed to update site table: ' . \mysqli_error($conn)); // perform the query
+    $stmt->close(); // close statement
+
+  }
+
+  public function deleteAccount() {
+
+    $id = $this->session->get('user')->ID;
+
+    $conn = $this->connect();
+
+    $stmt = $conn->prepare("DELETE FROM Users WHERE ID = ?");
+    $stmt->bind_param('i', $id); // bind parameters for query
+    $stmt->execute() or die('Failed to update site table: ' . \mysqli_error($conn)); // perform the query
+    $stmt->close(); // close statement
+
+    $stmt2 = $conn->prepare("DELETE FROM Works WHERE Author = ?");
+    $stmt2->bind_param('i', $id); // bind parameters for query
+    $stmt2->execute() or die('Failed to update site table: ' . \mysqli_error($conn)); // perform the query
+    $stmt2->close(); // close statement
+
+    $conn->close();
+
+    $this->session->invalidate();
+
+  }
+
+  public function deleteStory($wid) {
+
+    $conn = $this->connect();
+
+    $stmt2 = $conn->prepare("DELETE FROM Works WHERE ID = ?");
+    $stmt2->bind_param('i', $wid); // bind parameters for query
+    $stmt2->execute() or die('Failed to update site table: ' . \mysqli_error($conn)); // perform the query
+    $stmt2->close(); // close statement
+
+    $conn->close();
+  }
+
 }
 
 class MainController extends AbstractController
 {
-    /**
-     * Matches / exactly
-     *
-     * @Route("/", name="index")
-     */
 
-    public function index()
-    {
+    public function index() {
       return $this->render('index.html.twig');
     }
 
-    public function about()
-    {
+    public function about() {
       return $this->render('about.html.twig');
     }
 
@@ -721,10 +854,11 @@ class MainController extends AbstractController
     }
 
     public function edit_profile() {
+
+      $session = $this->get('session');
+
       if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-
-        $session = $this->get('session');
         $db = new db($session);
 
         $db->submitProfileUpdate();
@@ -735,16 +869,21 @@ class MainController extends AbstractController
 
       }
 
+      else if ($session->get('user') == NULL) {
+        return new Response($this->renderView('401.html.twig', array(), 401));
+      }
+
       else {
         return $this->render('edit.html.twig');
       }
     }
 
     public function show_add() {
+
+      $session = $this->get('session');
+
       if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-
-        $session = $this->get('session');
         $db = new db($session);
 
         $db->postStory();
@@ -753,12 +892,16 @@ class MainController extends AbstractController
 
       }
 
+      else if ($session->get('user') == NULL) {
+        return new Response($this->renderView('401.html.twig', array(), 401));
+      }
+
       else {
         return $this->render('add.html.twig');
       }
     }
 
-    public function show_work($slug) {
+    public function show_work($slug, $slug2 = 0) {
       $pageid = intval($slug);
       $session = $this->get('session');
       $db = new db($session);
@@ -770,6 +913,11 @@ class MainController extends AbstractController
 
       else {
 
+        if ($workinfo->numChapters > 1 && $slug2 == 0) {
+          $id = $workinfo->ID;
+          return $this->redirect("/work/$id/chapter_1");
+        }
+
         if (isset($session->get('user')->ID)) {
           $usermatch = ($workinfo->author == $session->get('user')->ID ? true : false);
         }
@@ -778,17 +926,34 @@ class MainController extends AbstractController
           $usermatch = false;
         }
 
-        $file = fopen("./works/$pageid/chap_1.txt", "r") or die("Unable to open file!");
+        if ($slug2 == 0) {
+          $slug2 = 1;
+        }
+
+        $file = fopen("./works/$pageid/chap_$slug2.txt", "r") or die("Unable to open file!");
         $content = "";
+        $chaptertitle = "";
 
         while(! feof($file))
         {
-        $content .= fgets($file). "<br /><br />";
+          $line = fgets($file);
+
+          if (strpos($line, "*TITLE*") !== false) {
+            $title = explode("*TITLE*: ", $line);
+            $chaptertitle = $title[1];
+          }
+
+          else {
+            $content .= $line;
+          }
         }
 
         fclose($file);
 
-        return $this->render('workpage.html.twig', ['pageWork' => $workinfo, 'usermatch' => $usermatch, 'content' => $content]);
+        $chapterTitles = calculations::getChapterTitles($pageid);
+
+        return $this->render('workpage.html.twig', ['pageWork' => $workinfo, 'usermatch' => $usermatch, 'content' => $content, 'currentChapter' => $slug2, 'chaptertitle' => $chaptertitle, 'chapterTitles' => $chapterTitles]);
+
       }
 
       return $this->render('workpage.html.twig');
@@ -830,16 +995,159 @@ class MainController extends AbstractController
       }
 
       else {
-        return $this->render('edit_work.html.twig', ['work' => $workinfo]);
+        $chapterTitles = calculations::getChapterTitles($wid);
+        return $this->render('edit_work.html.twig', ['work' => $workinfo, 'chapterTitles' => $chapterTitles]);
       }
 
     }
 
-    public function not_found($slug)
-    {
-      return $this->render('404.html.twig');
+    public function addChapter($slug) {
+
+      $wid = intval($slug);
+      $session = $this->get('session');
+      $db = new db($session);
+      $workinfo = $db->getWorkInfo($slug);
+
+      if ($session->get('user') == NULL) {
+        return new Response($this->renderView('401.html.twig', array(), 401));
+
+      }
+
+      else if ($workinfo["Author"] != $session->get('user')->ID) {
+        return new Response($this->renderView('401.html.twig', array(), 401));
+      }
+
+      else if ($workinfo == NULL) {
+        return $this->render('404.html.twig');
+      }
+
+      if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+        $session = $this->get('session');
+        $db = new db($session);
+
+        $id = $session->get('user')->ID;
+
+        $db->addNewChapter($wid, $workinfo);
+
+        return $this->redirect("/work/$wid");
+
+      }
+
+      else {
+        return $this->render('addChapter.html.twig');
+      }
+
     }
 
+    public function editChapter($slug, $slug2) {
+
+      $wid = intval($slug);
+      $chapterNum = intval($slug2);
+      $session = $this->get('session');
+      $db = new db($session);
+      $workinfo = $db->getWorkInfo($slug);
+
+      if ($session->get('user') == NULL) {
+        return new Response($this->renderView('401.html.twig', array(), 401));
+
+      }
+
+      else if ($workinfo["Author"] != $session->get('user')->ID) {
+        return new Response($this->renderView('401.html.twig', array(), 401));
+      }
+
+      else if ($workinfo == NULL) {
+        return $this->render('404.html.twig');
+      }
+
+      if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+        $id = $session->get('user')->ID;
+
+        $db->editChapter($wid, $chapterNum);
+
+        return $this->redirect("/work/$wid");
+
+      }
+
+      else {
+
+        $file = fopen("./works/$wid/chap_$chapterNum.txt", "r") or die("Unable to open file!");
+        $content = "";
+        $chaptertitle = "";
+
+        while(! feof($file))
+        {
+          $line = fgets($file);
+
+          if (strpos($line, "*TITLE*") !== false) {
+            $title = explode("*TITLE*: ", $line);
+            $chaptertitle = $title[1];
+          }
+
+          else {
+            $content .= $line;
+          }
+        }
+
+        fclose($file);
+
+        if (calculations::numFiles("./works/$wid") == 1) {
+          return $this->render('editChapterSingle.html.twig', ['content' => $content]);
+        }
+
+        else {
+          return $this->render('editChapter.html.twig', ['title' => $chaptertitle, 'content' => $content, 'x' => $x]);
+        }
+      }
+
+    }
+
+    public function deleteAccount() {
+
+      $session = $this->get('session');
+      $db = new db($session);
+
+      $db->deleteAccount();
+
+      return $this->redirect('/');
+
+    }
+
+    public function deleteStory($slug) {
+
+      $wid = intval($slug);
+      $session = $this->get('session');
+      $db = new db($session);
+      $workinfo = $db->getWorkInfo($wid);
+
+      if ($session->get('user') == NULL) {
+        return new Response($this->renderView('401.html.twig', array(), 401));
+
+      }
+
+      else if ($workinfo["Author"] != $session->get('user')->ID) {
+        return new Response($this->renderView('401.html.twig', array(), 401));
+      }
+
+      else if ($workinfo == NULL) {
+        return $this->render('404.html.twig');
+      }
+
+      else {
+
+        $db->deleteStory($wid);
+        $author = $workinfo["Author"];
+        return $this->redirect("/user/$author");
+
+      }
+
+    }
+
+    public function not_found($slug){
+      return $this->render('404.html.twig');
+    }
 
 }
 

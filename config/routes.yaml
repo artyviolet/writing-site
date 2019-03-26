@@ -50,9 +50,30 @@ work_page:
   path: /work/{slug}
   controller: App\Controller\MainController::show_work
 
+work_page_chapter:
+  path: /work/{slug}/chapter_{slug2}
+  controller: App\Controller\MainController::show_work
+
 edit_work_details:
   path: /work/{slug}/edit
   controller: App\Controller\MainController::edit_work
+
+add_chapter:
+  path: /work/{slug}/add
+  controller: App\Controller\MainController::addChapter
+
+edit_chapter:
+  path: /work/{slug}/chapter_{slug2}/edit
+  controller: App\Controller\MainController::editChapter
+
+delete_account:
+  path: /delete
+  controller: App\Controller\MainController::deleteAccount
+
+delete_story:
+  path: /work/{slug}/delete
+  controller: App\Controller\MainController::deleteStory
+
 
 notFound:
   path: /{slug}

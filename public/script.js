@@ -18,7 +18,7 @@ $(document).ready(function() {
 	}
 
 
-	$('button').click(function() {
+	$('#searchWorks').click(function() {
 		const rating = encodeURIComponent($('#rating').val());
 		const genre = encodeURIComponent($('#genre').val());
 		const title = encodeURIComponent($('#title').val());
@@ -32,4 +32,16 @@ $(document).ready(function() {
         	$('ul').replaceWith(list);
         });
 	});
+
+    $("#chooseChapter").change(function(){
+
+        let selected = $(this).children("option:selected").val();
+				window.location = './chapter_' + selected;
+    });
+
+		$('#changePic').click(function() {
+			console.log('lol what');
+			$('#button-container').html("<input type = \"file\" name = \"photo\" />");
+		});
+
 })

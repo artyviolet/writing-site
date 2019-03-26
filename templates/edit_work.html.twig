@@ -7,12 +7,12 @@
 <div class = "error">{%if message is defined %}{{message}}{% endif %}</div>
 
 <form id = "add" method = "POST" enctype = "multipart/form-data" action = "">
-	<label>Title</label>
+	<label>Title:</label>
 	<br />
 	<input type = "text" name = "title" value = "{{work.Title}}">
 	<br />
 	<br />
-	<label>Description</label>
+	<label>Description:</label>
 	<br />
 	<input type = "text" name = "desc" value = "{{work.Description}}">
 	<br />
@@ -40,15 +40,43 @@
 	</select>
 	<br />
 	<br />
-	<label>Cover: </label><input type = "file" name = "photo" />
+	<label>Cover: </label>
 	<br />
+	<img id = "currentCover" src="/coverimg/{{work.Cover}}" />
+	<br />
+	<br />
+	<div id = "button-container">
+		<button id = "changePic" type = "button">Change Image</button>
+		<!--<input type = "file" name = "photo" />-->
+	</div>
 	<br />
 	<label>Tags:</label>
 	<br />
 	<input type = "text" name = "tags" value = "{{work.Tags}}"/>
+	<br />
+	<br />
+
+	{% if chapterTitles|length == 1 %}
+ 	<a href="/work/{{work.ID}}/chapter_1/edit">Edit Content</a>
+	{% endif %}
+
+  {% if chapterTitles|length > 1 %}
+	<h3>Chapters</h3>
+	{% for i in 1..chapterTitles|length%}
+		<p class = "exclude">{{chapterTitles[i-1]}} - <a href="/work/{{work.ID}}/chapter_{{i}}/edit">Edit</a></p>
+	{% endfor %}
+	{% endif %}
+	<br />
+	<a href="/work/{{work.ID}}/add">Add a New Chapter</a>
 
 	<br />
 	<br />
+
+	<a href="/work/{{work.ID}}/delete" onClick="return confirm('Are you sure you want to delete this work?')">Delete This Work</a>
+
+	<br />
+	<br/>
+
 	<input type = "submit" value = "Submit Work">
 
 {% endblock %}

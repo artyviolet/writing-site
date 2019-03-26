@@ -2,27 +2,55 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>Project Name</title>
-	<link rel = "stylesheet" href = "../../style.css" />
+	<title>IndigoInk</title>
+	<link rel = "stylesheet" href = "../../../style.css" />
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=KoHo|Merriweather|Poppins" >
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script src="../../script.js"></script>
+	<script src="../../../script.js"></script>
+	<script src="https://cloud.tinymce.com/5/tinymce.min.js"></script>
+	<link rel = "icon" type = "image/png" sizes = "388x388" href = "../../../favicon.png">
+	<script>
+		tinymce.init({
+			selector: '#addcontent',
+			plugins: 'paste',
+			paste_as_text: true
+		});
+		tinymce.init({
+			selector: '#addchaptercontent',
+			plugins: 'paste',
+			paste_as_text: true
+		});
+	</script>
 </head>
 <body>
 <nav>
-	<a class = "navLink" href="/">Home</a>
-	<a class = "navLink" href="/about">About</a>
-	<a class = "navLink" href="/library">Library</a>
-	<a class = "navLink" href="/forum">Forum</a>
-	{% if app.session.get('user') != null %}
-	<a class = "right" id = "logoutbutton" href="/logout">Log Out</a>
-	<a class = "right" id = "editprofilebutton" href="/edit">Edit Profile</a>
-	<p class = "right">Welcome, <a id = "gotouser" href="/user/{{app.session.get('user').ID}}">{{app.session.get('user').username}}</a></p>
-	{% endif %}
+	<div id="fb-root"></div>
+	<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.2"></script>
+	<div id = "linkContainer">
+		<a class = "navLink" href="/"><img src="../../../help-2.png" id = "logoMain"/></a>
+		<a class = "navLink" href="/about">About</a>
+		<a class = "navLink" href="/library">Library</a>
+		<a class = "navLink" href="/forum">Forum</a>
+	</div>
+	<div id = "rightContainer">
+		{% if app.session.get('user') != null %}
+		<div class = "dropdown">
+			<div id = "flex-cont">
+				<img id ="propicicon" src="/img/{{app.session.get('user').pic}}"><a id = "gotouser" href="/user/{{app.session.get('user').ID}}">&nbsp; &nbsp;{{app.session.get('user').username}}</a>
+			</div>
+			<div class = "dropdown-content">
+				<a href = "/edit">Edit Profile</a>
+				<a href = "/add">Add a New Work</a>
+				<a href = "./example.html">Account Settings</a>
+				<a href = "/logout">Log Out</a>
+			</div>
+		</div>
+		{% endif %}
 	{% if app.session.get('user') == null %}
-	<a href="/register" class = "right">Register</a>
 	<a href="/login" class = "right">Log In</a>
+	<a href="/register" class = "right">Register</a>
 	{% endif %}
+	</div>
 </nav>
 <div id = "content">
 {% block body %}{% endblock %}

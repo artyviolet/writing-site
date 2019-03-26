@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<h1 id = "add">Add Chapter</h1>
+
+{% if adderr is defined %}
+<div class="error">{{adderr}}</div>
+{% endif %}
+
+<form id = "addchapter" method = "POST" action = "">
+	<label>Title</label>
+	<br />
+	<input type = "text" name = "title">
+	<br />
+	<br />
+	<textarea rows = "30" cols = "5" name = "content" id = "addchaptercontent"></textarea>
+	<br />
+	<br />
+	<input type = "submit" value = "Submit Chapter">
+
+</form>
+
+<br />
+
+{% endblock %}
